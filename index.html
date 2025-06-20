@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Nombres Urbanos Únicos</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    input {
+      padding: 8px;
+      margin: 10px;
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #00bfff;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    #resultado {
+      margin-top: 30px;
+      font-size: 28px;
+      color: #00ffcc;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔤 Generador de Nombres Owner:Mechu </h1>
+  <p>Elegí con qué letra empieza el nombre y el apellido (A-Z)</p>
+
+  <input type="text" id="letraNombre" maxlength="1" placeholder="Letra Nombre (A-Z)">
+  <input type="text" id="letraApellido" maxlength="1" placeholder="Letra Apellido (A-Z)">
+  <br>
+  <button id="botonGenerar">Generar</button>
+
+  <div id="resultado"></div>
+
+  <script>
+    const vocales = ["a", "e", "i", "o", "u"];
+    const consonantes = ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "qu", "r", "s", "t", "v", "w", "x", "y", "z"];
+
+    const usados = new Set(); // Para guardar combinaciones únicas
+
+    function mayus(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function generarSilaba() {
+      let tipo = Math.random();
+      if (tipo < 0.33) {
+        return consonantes[random(consonantes)] + vocales[random(vocales)];
+      } else if (tipo < 0.66) {
+        return vocales[random(vocales)] + consonantes[random(consonantes)];
+      } else {
+        return consonantes[random(consonantes)] + vocales[random(vocales)] + consonantes[random(consonantes)];
+      }
+    }
+
+    function random(arr) {
+      return Math.floor(Math.random() * arr.length);
+    }
+
+    function generarPalabra(letraInicial) {
+      let palabra = "";
+      let intentos = 0;
+
+      do {
+        let silabas = [];
+        const cantidad = Math.floor(Math.random() * 2) + 2; // entre 2 y 3 sílabas
+        for (let i = 0; i < cantidad; i++) {
+          silabas.push(generarSilaba());
+        }
+
+        palabra = silabas.join("");
+
+        // A veces agregar apóstrofe
+        if (Math.random() < 0.3) {
+          const pos = Math.floor(Math.random() * (palabra.length - 2)) + 1;
+          palabra = palabra.slice(0, pos) + "’" + palabra.slice(pos);
+        }
+
+        // Asegurar que empiece con la letra requerida
+        palabra = letraInicial.toLowerCase() + palabra.slice(1);
+        intentos++;
+        if (intentos > 1000) break; // escape infinito
+      } while (usados.has(palabra));
+
+      usados.add(palabra);
+      return mayus(palabra);
+    }
+
+    function generarNombre() {
+      const letraN = document.getElementById("letraNombre").value.trim();
+      const letraA = document.getElementById("letraApellido").value.trim();
+
+      if (!letraN.match(/^[a-zA-Z]$/) || !letraA.match(/^[a-zA-Z]$/)) {
+        document.getElementById("resultado").innerText = "Ingresá solo letras válidas (A-Z).";
+        return;
+      }
+
+      const nombre = generarPalabra(letraN);
+      const apellido = generarPalabra(letraA);
+      document.getElementById("resultado").innerText = `${nombre} ${apellido}`;
+    }
+
+    document.getElementById("botonGenerar").addEventListener("click", generarNombre);
+  </script>
+</body>
+</html>
